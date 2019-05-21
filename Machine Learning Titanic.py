@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar  1 11:28:26 2019
-
-@author: bradw
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Tue Feb 19 13:27:23 2019
 
 @author: bradw
@@ -14,7 +7,6 @@ Created on Tue Feb 19 13:27:23 2019
 
 # data analysis and wrangling
 import pandas as pd
-import numpy as np
 
 #Timing functions 
 import time
@@ -24,11 +16,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # machine learning
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report,confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
@@ -99,7 +91,7 @@ plt.show()
 def data_wrangler(dataframe):
     df['Title'] = df.Name.str.extract(' ([A-Za-z]+)\.', expand=False)
     df['Title'] = df['Title'].replace(['Mlle','Countess','Mme','Lady','Dona'], 'Mrs')
-    df['Title'] = df['Title'].replace(['Ms','Miss'], 'Miss')
+    df['Title'] = df['Title'].replace(['Ms'], 'Miss')
     df['Title'] = df['Title'].replace(['Major','Sir','Capt','Col','Don','Rev'], 'Mr')
     df['Title'] = df['Title'].replace(['Jonkheer','Master'], 'Master')
     df['Title'].loc[797] = 'Dr. F'
@@ -134,9 +126,8 @@ def title_age_impute():
        
 title_age_impute()
 
-csv_tableau = df.drop(['Sex'],axis=1)
-csv_tableau = csv_tableau[pd.notna(csv_tableau['Survived'])]
-csv_tableau.to_csv('Titanic Data Set Clean.csv')
+#Dropping non numerical columns from DataFrame
+df = df.drop(['Sex','Title'],axis=1)
 
 #Splitting data into train and test data after data wrangling
 train_df = df[pd.notna(df['Survived'])]
@@ -175,8 +166,23 @@ rfc_predict = rfc.predict(X_test)
 print(confusion_matrix(y_test,rfc_predict))
 print(classification_report(y_test,rfc_predict))
 
+#Ada Boost classifier
+ada = AdaBoostClassifier()
+ada.fit(X_train,y_train)
+ada_predict = ada.predict(X_test)
 
+#testing model on test data
+print(confusion_matrix(y_test,ada_predict))
+print(classification_report(y_test,ada_predict))
 
+#Decision Tree
+decT = DecisionTreeClassifier()
+decT.fit(X_train,y_train)
+decT_predict = decT.predict(X_test)
+
+#testing model on test data
+print(confusion_matrix(y_test,decT_predict))
+print(classification_report(y_test,decT_predict))
 
 #Predictions out
 submission = pd.DataFrame(index=test_df.index,columns=['Survived'])
@@ -184,7 +190,7 @@ submission['Survived'] = rfc.predict(test_df)
 submission = submission.astype(int)
 submission.info()
 
-submission.to_csv('Submission Random Forest.csv')
+submission.to_csv('Submission.csv')
 
 
 #Time end

@@ -6,7 +6,7 @@
 * [Setup](#Setup)
 
 ## Introduction 
-This project was my submission to the Machine Learning competition from Kaggle on the Titanic mortality problem. Finished top 25% for competition cycle.  
+This project was my submission to the Machine Learning competition from Kaggle on the Titanic mortality problem. Finished top 25% for competition cycle (Files removed at end of competition cycle). https://www.kaggle.com/bradwebb101
 
 ## Technologies
 Project was created with Python 3.7, libraries include:
